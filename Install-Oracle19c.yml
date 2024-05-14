@@ -1,0 +1,66 @@
+# Oracle Database 19.3 Installation YAML file for Red Hat Enterprise Linux 8.7
+
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install required packages
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - binutils
+        - compat-libcap1
+        - compat-libstdc++-33
+        - compat-libstdc++-33.i686
+        - gcc
+        - gcc-c++
+        - glibc
+        - glibc.i686
+        - glibc-devel
+        - glibc-devel.i686
+        - ksh
+        - libaio
+        - libaio.i686
+        - libaio-devel
+        - libaio-devel.i686
+        - libgcc
+        - libgcc.i686
+        - libstdc++
+        - libstdc++.i686
+        - libstdc++-devel
+        - libstdc++-devel.i686
+        - libXi
+        - libXi.i686
+        - libXtst
+        - libXtst.i686
+        - make
+        - sysstat
+        - unzip
+        - zip
+
+    - name: Create directories for Oracle installation
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - /u01
+        - /u01/app
+        - /u01/app/oracle
+        - /u01/app/oraInventory
+
+    - name: Download Oracle Database 19c software
+      get_url:
+        url: "http://path/to/your/oracle/database/19c/software.zip"
+        dest: "/tmp/software.zip"
+
+    - name: Extract Oracle Database 19c software
+      unarchive:
+        src: "/tmp/software.zip"
+        dest: "/u01/app/oracle"
+        remote_src: yes
+        creates: "/u01/app/oracle/database/runInstaller"
+
+    - name: Run Oracle Database 19c installer
+      command: "/u01/app/oracle/database/runInstaller -silent -ignorePrereq -waitforcompletion -responseFile /path/to/your/response/file.rsp"
